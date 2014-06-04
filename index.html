@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>
+<script src="http://code.jquery.com/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css"/>
+<script src="http://getbootstrap.com/dist/js/bootstrap.js"></script>
+  <meta charset="utf-8">
+  <title>Email App</title>
+  <script type="text/javascript">
+    function EmailController($scope) {
+    $scope.emails = [
+      { from: 'Kasi', subject: 'I love angular', date: 'Jan 1',body:'I love angular' },
+      { from: 'Anvesh', subject: 'Angular and I are just friends', date: 'Feb 15',body:'Angular and I are just friends' },
+      { from: 'Prasad', subject: 'I hate you Angular!', date: 'Dec 8',body:'I hate you Angular!' }
+    ];
+      
+      $scope.isPopupVisible=false;
+      
+      $scope.showPopup=function(email){
+        $scope.isPopupVisible=true;
+        $scope.selectedEmail=email;
+      };
+      
+      $scope.closePopup=function(){
+        $scope.isPopupVisible=false;
+      };
+  }
+  </script>
+</head>
+<body ng-app ng-controller="EmailController">
+<div class="container">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+      <th>From</th>
+      <th>Subject</th>
+      <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="email in emails" ng-click="showPopup(email)">
+        <td>{{email.from}}</td>
+        <td>{{email.subject}}</td>
+        <td>{{email.date}}</td>
+      </tr>
+    </tbody>
+  </table>
+      
+  <div class="modal" ng-show="isPopupVisible">  
+    <div class="modal-header">
+      <button type="button" class="close" ng-click="closePopup()">x</button>
+        <h4 class="modal-title">{{selectedEmail.subject}}</h4>
+    </div>
+    <div class="modal-body">
+      <strong>From:</strong>{{selectedEmail.from}}<br />
+      <strong>Date:</strong> {{selectedEmail.date}}<br />
+      <br />
+      <p>
+        {{selectedEmail.body}}
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" ng-click="closePopup()">Close</button>
+    </div>
+  </div><!-- /.modal -->
+  
+  
+</div>  
+</body>
+</html>
