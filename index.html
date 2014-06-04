@@ -11,7 +11,7 @@
     function EmailController($scope) {
     $scope.emails = [
       { from: 'Kasi', subject: 'I love angular', date: 'Jan 1',body:'I love angular' },
-      { from: 'Anvesh', subject: 'Angular and I are just friends', date: 'Feb 15',body:'Angular and I are just friends' },
+      { from: 'Anvesh', subject: 'Angular and I are just friends', date: 'Feb 15',body:'Angular and I are just               friends' },
       { from: 'Prasad', subject: 'I hate you Angular!', date: 'Dec 8',body:'I hate you Angular!' }
     ];
       
@@ -25,12 +25,39 @@
       $scope.closePopup=function(){
         $scope.isPopupVisible=false;
       };
+      
+      $scope.isComposePopupVisible=false;
+      $scope.composeEmail={};
+      
+      $scope.showComposePopup=function(){
+        $scope.composeEmail={};
+        $scope.isComposePopupVisible=true;
+      };
+      
+      $scope.closeComposePopup=function(){
+        $scope.isComposePopupVisible=false;
+      };
+      
+      $scope.sendEmail=function(){
+        alert($scope.composeEmail.to
+              +" "+$scope.composeEmail.subject
+              +" "+$scope.composeEmail.body);
+        $scope.isComposePopupVisible=false;
+      };
+      
+      
   }
+    
   </script>
+  <style type="text/css">
+   table td:hover {
+      cursor:pointer;
+    }
+</style>
 </head>
 <body ng-app ng-controller="EmailController">
 <div class="container">
-  <table class="table table-bordered">
+  <table class="table table-bordered" id="grdDerails">
     <thead>
       <tr>
       <th>From</th>
@@ -46,7 +73,9 @@
       </tr>
     </tbody>
   </table>
-      
+  <button type="button" class="btn btn-primary"  ng-click="showComposePopup()">Compose</button>
+  
+  <!-- View Email -->    
   <div class="modal" ng-show="isPopupVisible">  
     <div class="modal-header">
       <button type="button" class="close" ng-click="closePopup()">x</button>
@@ -64,6 +93,25 @@
       <button type="button" class="btn btn-default" ng-click="closePopup()">Close</button>
     </div>
   </div><!-- /.modal -->
+  <!-- Compose New Email -->
+  <div class="modal" ng-show="isComposePopupVisible">
+    <div class="modal-header">
+      <button type="button" class="close" ng-click="closeComposePopup()">x</button>
+      <h3>Compose Email</h3>
+    </div>
+    <div class="modal-body">
+      <form>
+        <input type="text" placeholder="To" style="width:95%;" ng-model="composeEmail.to" /><br/>
+        <input type="text" placeholder="Subject" style="width:95%;" ng-model="composeEmail.subject" /><br/>
+        <textarea rows="10" style="width:95%;" ng-model="composeEmail.body" ></textarea>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <a href="#" class="btn" ng-click="closeComposePopup()">Cancel</a>
+      <a href="#" class="btn btn-primary" ng-click="sendEmail()">Send</a>
+    </div>
+  </div><!-- /.modal -->
+  
   
   
 </div>  
