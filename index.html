@@ -10,9 +10,25 @@
   <script type="text/javascript">
     function EmailController($scope) {
     $scope.emails = [
-      { from: 'Kasi', subject: 'I love angular', date: 'Jan 1',body:'I love angular' },
-      { from: 'Anvesh', subject: 'Angular and I are just friends', date: 'Feb 15',body:'Angular and I are just               friends' },
-      { from: 'Prasad', subject: 'I hate you Angular!', date: 'Dec 8',body:'I hate you Angular!' }
+      { 
+        from: 'Kasi', 
+        to:'me', 
+        subject: 'I love angular', 
+        date: 'Jan 1', 
+        body:'I love angular' 
+      },
+      { 
+        from: 'Anvesh', 
+        to:'me', 
+        subject: 'Angular and I are just friends', 
+        date: 'Feb 15',body:'Angular and I are just friends' 
+      },
+      { from: 'Prasad', 
+       to:'me', 
+       subject: 'I hate you Angular!', 
+       date: 'Dec 8',
+       body:'I hate you Angular!' 
+      }
     ];
       
       $scope.isPopupVisible=false;
@@ -28,6 +44,7 @@
       
       $scope.isComposePopupVisible=false;
       $scope.composeEmail={};
+      $scope.sentEmails=[];
       
       $scope.showComposePopup=function(){
         $scope.composeEmail={};
@@ -39,11 +56,15 @@
       };
       
       $scope.sendEmail=function(){
-        alert($scope.composeEmail.to
-              +" "+$scope.composeEmail.subject
-              +" "+$scope.composeEmail.body);
         $scope.isComposePopupVisible=false;
+        $scope.composeEmail.from="me";
+        $scope.composeEmail.date=new Date();
+        $scope.sentEmails.push($scope.composeEmail);
       };
+      
+      $scope.activeTab = "inbox";
+      
+      
       
       
   }
@@ -57,7 +78,13 @@
 </head>
 <body ng-app ng-controller="EmailController">
 <div class="container">
-  <table class="table table-bordered" id="grdDerails">
+  
+  <ul class="nav nav-tabs" >
+    <li ng-class="{active: activeTab=='inbox'}"><a ng-click="activeTab='inbox'">Inbox</a></li>
+    <li ng-class="{active: activeTab=='sent'}"><a ng-click="activeTab='sent'">Sent</a></li>
+  </ul>
+  <!-- Indbox -->
+  <table ng-show="activeTab=='inbox'" class="table table-bordered table-hover" id="grdDerails">
     <thead>
       <tr>
       <th>From</th>
@@ -72,7 +99,26 @@
         <td>{{email.date}}</td>
       </tr>
     </tbody>
-  </table>
+  </table> <!-- /.Inbox -->
+  
+  <!-- Sent -->
+  <table ng-show="activeTab=='sent'" class="table table-bordered table-hover" id="grdDerails">
+    <thead>
+      <tr>
+      <th>To</th>
+      <th>Subject</th>
+      <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="email in sentEmails" ng-click="showPopup(email)" >
+        <td>{{email.to}}</td>
+        <td>{{email.subject}}</td>
+        <td>{{email.date | date:'MMM d'}}</td>
+      </tr>
+    </tbody>
+  </table><!-- /.Sent -->
+  
   <button type="button" class="btn btn-primary"  ng-click="showComposePopup()">Compose</button>
   
   <!-- View Email -->    
@@ -83,7 +129,8 @@
     </div>
     <div class="modal-body">
       <strong>From:</strong>{{selectedEmail.from}}<br />
-      <strong>Date:</strong> {{selectedEmail.date}}<br />
+      <strong>To:</strong>{{selectedEmail.to}}<br />
+      <strong>Date:</strong> {{selectedEmail.date|date:'MMM d'}}<br />
       <br />
       <p>
         {{selectedEmail.body}}
@@ -93,6 +140,7 @@
       <button type="button" class="btn btn-default" ng-click="closePopup()">Close</button>
     </div>
   </div><!-- /.modal -->
+  
   <!-- Compose New Email -->
   <div class="modal" ng-show="isComposePopupVisible">
     <div class="modal-header">
