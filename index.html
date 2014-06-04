@@ -3,7 +3,7 @@
 <head>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>
 <script src="http://code.jquery.com/jquery.min.js"></script>
-<link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css"/>
+<link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css"/>  
 <script src="http://getbootstrap.com/dist/js/bootstrap.js"></script>
   <meta charset="utf-8">
   <title>Email App</title>
@@ -59,12 +59,58 @@
         $scope.isComposePopupVisible=false;
         $scope.composeEmail.from="me";
         $scope.composeEmail.date=new Date();
-        $scope.sentEmails.push($scope.composeEmail);
+        //$scope.sentEmails.push($scope.composeEmail); //OLD
+        $scope.sentEmails.splice(0,0,$scope.composeEmail); //NEW
       };
       
       $scope.activeTab = "inbox";
       
+      $scope.forward = function() {
+        $scope.isPopupVisible = false;
+        $scope.composeEmail = {};
+        angular.copy($scope.selectedEmail, $scope.composeEmail);
+
+        $scope.composeEmail.body = 
+            "\n-------------------------------\n" 
+            + "from: " + $scope.composeEmail.from + "\n"
+            + "sent: " + $scope.composeEmail.date + "\n"
+            + "to: " + $scope.composeEmail.to + "\n"
+            + "subject: " + $scope.composeEmail.subject + "\n"
+            + $scope.composeEmail.body;
+
+        $scope.composeEmail.subject = "FW: " + $scope.composeEmail.subject;
+        $scope.composeEmail.to = "";
+        $scope.composeEmail.from = "me";
+        $scope.isComposePopupVisible = true;
+      };
       
+      $scope.reply = function() {
+        // hide the view details popup
+        $scope.isPopupVisible = false;
+        // create an empty composeEmail object the compose email popup is bound to
+        $scope.composeEmail = {};
+        // copy the data from selectedEmail into composeEmail
+        angular.copy($scope.selectedEmail, $scope.composeEmail);
+
+        // edit the body to prefix it with a line and the original email information
+        $scope.composeEmail.body = 
+          "\n-------------------------------\n" 
+          + "from: " + $scope.composeEmail.from + "\n"
+          + "sent: " + $scope.composeEmail.date + "\n"
+          + "to: " + $scope.composeEmail.to + "\n"
+          + "subject: " + $scope.composeEmail.subject + "\n"
+          + $scope.composeEmail.body;
+
+        // prefix the subject with “RE:”
+        $scope.composeEmail.subject = "RE: " + $scope.composeEmail.subject;
+        // the email is going to the person who sent it to us 
+        // so populate the to with from
+        $scope.composeEmail.to = $scope.composeEmail.from;
+        // it’s coming from us
+        $scope.composeEmail.from = "me";
+        // show the compose email popup
+        $scope.isComposePopupVisible = true;
+      };
       
       
   }
@@ -121,7 +167,7 @@
   
   <button type="button" class="btn btn-primary"  ng-click="showComposePopup()">Compose</button>
   
-  <!-- View Email -->    
+  <!-- Email Details -->    
   <div class="modal" ng-show="isPopupVisible">  
     <div class="modal-header">
       <button type="button" class="close" ng-click="closePopup()">x</button>
@@ -133,10 +179,12 @@
       <strong>Date:</strong> {{selectedEmail.date|date:'MMM d'}}<br />
       <br />
       <p>
-        {{selectedEmail.body}}
+        <span style="white-space:pre">{{selectedEmail.body}}</span>
       </p>
     </div>
     <div class="modal-footer">
+      <a href="#" class="btn" ng-click="forward()">Forward</a>
+      <a href="#" class="btn" ng-click="reply()">Reply</a>
       <button type="button" class="btn btn-default" ng-click="closePopup()">Close</button>
     </div>
   </div><!-- /.modal -->
@@ -149,7 +197,7 @@
     </div>
     <div class="modal-body">
       <form>
-        <input type="text" placeholder="To" style="width:95%;" ng-model="composeEmail.to" /><br/>
+        <input type="text" placeholder="To" style="width:95%;" ng-model="composeEmail.to" required /><br/>
         <input type="text" placeholder="Subject" style="width:95%;" ng-model="composeEmail.subject" /><br/>
         <textarea rows="10" style="width:95%;" ng-model="composeEmail.body" ></textarea>
       </form>
